@@ -18,6 +18,8 @@ from placement import PositionSlot, initial_position
 from progress import displayed_progress
 from window_style import configure_window
 from transitions import PanelMotion,animations_enabled,enter_view,exit_view
+from usage_source import UsageReader,provider_for
+from usage_ui import current_usage,draw_usage,draw_usage_ring,toggle_usage,draw_usage_message
 from sharing import share_task
 from native_qr import draw_qr,hide_qr,copy_qr
 
@@ -28,6 +30,9 @@ class Bubble:
     def __init__(self, state):
         self.state = state
         self.data = {}
+        self.usage_reader=UsageReader()
+        self.usage_snapshot=None
+        self.usage_window='primary'
         self.expanded = False
         self.mobile_url = None
         self.down = None
@@ -80,11 +85,12 @@ class Bubble:
         self.canvas.tag_bind('colors', '<ButtonRelease-1>', lambda e: self.edit_colors())
         self.canvas.tag_bind('reset-colors', '<ButtonRelease-1>', lambda e: self.reset_theme())
         self.canvas.tag_bind('sizes','<ButtonRelease-1>',lambda e:show_size_menu(self,e))
+        self.canvas.tag_bind('usage','<ButtonRelease-1>',lambda e:toggle_usage(self))
         self.canvas.tag_bind('mobile','<ButtonRelease-1>',lambda e:share_task(self))
         self.canvas.tag_bind('qr-back','<ButtonRelease-1>',lambda e:hide_qr(self))
         self.canvas.tag_bind('qr-copy','<ButtonRelease-1>',lambda e:copy_qr(self))
         self.canvas.bind('<Button-3>',lambda e:show_size_menu(self,e))
-        for tag in ('bubble', 'close', 'report','colors','reset-colors','sizes','mobile','qr-back','qr-copy'):
+        for tag in ('bubble', 'close', 'report','colors','reset-colors','sizes','mobile','qr-back','qr-copy','usage'):
             self.canvas.tag_bind(tag, '<Enter>', lambda e: self.canvas.configure(cursor='hand2'))
             self.canvas.tag_bind(tag, '<Leave>', lambda e: self.canvas.configure(cursor=''))
         self.root.bind('<Escape>', lambda event: self.root.destroy())
@@ -116,6 +122,7 @@ class Bubble:
         p = round(displayed_progress(self.data),1)
         status = self.data.get('status', 'Aguardando atualização')
         t = self.theme
+        usage=current_usage(self)
         color = t[{'Concluído':'complete','Falha':'error',
                    'Interrompido':'waiting','Aguardando informação':'waiting'}.get(status,'ongoing')]
         if self.expanded and getattr(self,'mobile_url',None):
@@ -137,7 +144,10 @@ class Bubble:
             self.rounded(23,164,329,171,3,t['track'],'progress')
             if p:
                 self.rounded(23,164,23+306*p/100,171,3,t['bar'] if status=='Em andamento' else color,'progress')
-            self.text(23,185,self.data.get('message','')[:88],9,t['message'],width=302,translate=False)
+            if usage:
+                draw_usage(self,usage)
+                draw_usage_message(self,self.data.get('message',''))
+            else:self.text(23,185,self.data.get('message','')[:88],9,t['message'],width=302,translate=False)
             self.text(329,90,'Tamanhos',8,t['links'],anchor='ne',tags='sizes')
             self.text(329,112,'Celular',8,t['links'],anchor='ne',tags='mobile')
             self.text(23,234,eta_text(self.data),9,t['links'])
@@ -167,6 +177,7 @@ class Bubble:
         self.ring_image = tk.PhotoImage(data=ring_png(p,t['ring'] if status=='Em andamento' else color,
             bs,t['bubble_background'],t['track'],t['border']))
         c.create_image(bx,by,image=self.ring_image,anchor='nw',tags='bubble')
+        if usage:draw_usage_ring(self,usage)
         c.create_text(bx+42*bs,by+42*bs,text=f'{int(p)}%',fill=t['bubble_text'],
                       font=('Segoe UI',-max(1,round(14*bs*96/72)),'bold'),tags='bubble')
         self.draw_bubble_close()
@@ -330,11 +341,18 @@ class Bubble:
             if data.get('dismissed') and data.get('status') == 'Concluído' and data.get('percent') == 100:
                 self.root.destroy()
                 return
+            self.usage_snapshot=self.usage_reader.read(provider_for(data.get('usage_provider'),data.get('conversation_url')))
+            previous_data=self.data
+            self.data=data
+            quota_state=current_usage(self)
+            self.data=previous_data
             current_eta = eta_text(data)
             current_progress = round(displayed_progress(data),1)
             if (data != self.data or current_eta != getattr(self,'last_eta',None)
-                    or current_progress != getattr(self,'last_progress',None)):
+                    or current_progress != getattr(self,'last_progress',None)
+                    or quota_state != getattr(self,'last_usage',None)):
                 self.data = data
+                self.last_usage=quota_state
                 self.last_eta = current_eta
                 self.last_progress = current_progress
                 self.draw()

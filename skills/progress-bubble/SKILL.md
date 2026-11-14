@@ -118,6 +118,14 @@ Explicar que qualquer pessoa com o link/QR pode ler aquela demanda até expirar:
 
 Para encerrar somente o compartilhamento: `python "<diretorio-absoluto-desta-skill>/scripts/status.py" --output "<html-desta-demanda>" --stop-sharing`. Se houver falha de rede, informar revogação pendente; as próximas atualizações tentam novamente. Não afirmar revogação antes da confirmação. Falhas na nuvem preservam o acompanhamento local. Expiração bloqueia leitura no servidor e a limpeza é horária; backups de recuperação D1 Free podem reter dados por sete dias.
 
+## Cota da assinatura no desktop
+
+O cartão Windows oferece uma segunda barra da cota real da assinatura e a bolinha um anel externo por faixa de uso (verde <60%, amarelo ≥60%, laranja ≥80%, vermelho ≥95%). Manter o percentual da demanda na bolinha; não escrever nela percentual de uso nem tempo de renovação. Ao alcançar 100% da janela selecionada, mostrar SOMENTE no cartão a duração restante até o reset informado pelo provedor. Sem prazo válido, mostrar indisponível; após o reset, aguardar nova leitura real, sem fabricar 0%. Clicar no rótulo da assinatura alterna as janelas primária/semanal disponíveis. Não aumentar o cartão, não alterar a tela QR e não transformar a cota em avanço estimado pelo relógio.
+
+No Codex, uma origem codex:// confirmada ativa a coleta local pelo app-server oficial, com cache compartilhado por aproximadamente um minuto entre bolinhas do mesmo perfil (respeitar CODEX_HOME e CLAUDE_CONFIG_DIR, sem misturar contas de perfis diferentes) e execução fora da thread da interface. `--usage-provider codex|claude|antigravity|off` permite escolher a origem ou desligar; a escolha é preservada nas atualizações do mesmo arquivo. Para Claude Code, passar `--usage-provider claude` e usar `scripts/usage_bridge.py --setup-claude` se o usuário ativar o acompanhamento de cota; nunca sobrescrever uma statusline personalizada. Integrar `usage_source.accept_feed('claude', payload)` no script existente quando necessário. Antigravity recebe somente feed normalizado real; a integração automática não foi validada e deve continuar indisponível sem um coletor confiável.
+
+A coleta não deve ler auth.json, cookies, credenciais ou a conversa. Armazenar apenas dados normalizados localmente, sem identificadores de conta. Não enviar consumo da assinatura para Cloudflare nem adicionar esses campos à allowlist de compartilhamento. As páginas de leitura temporárias continuam mostrando apenas a demanda. Dados ausentes/desatualizados devem aparecer como indisponíveis, nunca como uso zero. A coleta não deve bloquear a janela, iniciar chamadas de modelo ou comprar créditos.
+
 ## Limites
 
 Criar somente o acompanhamento necessário. Não publicar, abrir portas ou instalar serviços para o modo local. Compartilhamento remoto exige o pedido explícito descrito acima. Não expor credenciais, dados sensíveis ou detalhes internos desnecessários. O HTML complementa as atualizações da conversa.

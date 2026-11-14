@@ -36,6 +36,24 @@ Asked your agent to work on something while you focus elsewhere? **Progress Bubb
 
 > **Before installing:** the floating bubble requires **native Windows + Python 3.10 or later with Tkinter**. On macOS, Linux, WSL and environments without a desktop, use the HTML progress page.
 
+## 📊 Subscription usage in the desktop tracker
+
+The Windows card can show a second bar for **real subscription quota**, independently of task progress. Click **Subscription · 5h** to switch to the weekly window when available. The same selected window appears as a thin outer bubble ring: green below 60%, yellow from 60%, orange from 80%, and red from 95%. Long card messages collapse to one measured, ellipsized line when the quota bar is visible; their full content remains in the local files. The bubble keeps only its task percentage; it shows no quota percentage or renewal text.
+
+At 100% quota, **only the card** displays the remaining duration until renewal (for example, “Renews in 2h 15min”), using the provider's reset timestamp. Without a reset timestamp it says reset unavailable. After the timestamp passes, it waits for a fresh provider reading rather than inventing a zero. Stale/missing data displays unavailable or outdated; quota never advances from the task's time estimate.
+
+- **Codex:** automatically detected from a confirmed Codex conversation origin. Uses the installed official `codex app-server` account-rate-limits method, without model turns or opening authentication files. Reads are cached across bubbles and throttled to once per minute; Tk remains responsive. An existing signed-in Codex CLI/client is required.
+- **Claude Code:** the included bridge accepts the documented statusLine JSON for supported subscriptions. Enable it once with `python skills/progress-bubble/scripts/usage_bridge.py --setup-claude`, then use `--usage-provider claude` in tracker commands. Restart Claude Code afterward. The bridge is a silent quota receiver; renewal text is rendered only in the desktop card. Existing custom statuslines are preserved: setup refuses to replace one, so integrate `accept_feed('claude', payload)` into that script instead. A missing quota window remains unavailable. Data arrives when Claude emits statusline updates, rather than through an unsupported credential-based endpoint.
+- **Antigravity:** `--usage-provider antigravity` supports a local normalized feed, but an automatic IDE/CLI quota adapter has not been validated. It displays unavailable until a trusted adapter supplies real values. No estimated quota or fabricated integration is provided.
+
+Override detection with `--usage-provider codex`, `claude`, `antigravity`, or `off`. Provider selection is preserved for updates to the same tracker. Quota caches live under the user's `ProgressBubble/usage` configuration folder, separately namespaced by the Codex/Claude configuration profile. `CODEX_HOME` and `CLAUDE_CONFIG_DIR` are respected; Antigravity receivers can use `PROGRESS_BUBBLE_USAGE_PROFILE` to distinguish profiles. A successful provider response with no windows clears the old quota; transport failures retain a bounded last-known snapshot. Only normalized numeric quota windows and observation times are retained; credentials and account identifiers are excluded.
+
+**Local only:** subscription quota is not uploaded to the mobile service and is not shown to temporary-link viewers. The local JSON can contain the normalized snapshot; treat tracker files as private. The browser/mobile viewer still shows task progress only. No extra hosting or paid service is required.
+
+The Antigravity feed contract is `{"windows":{"primary":{"used_percent":42,"window_minutes":300,"resets_at":1790000000}}}` on stdin to `usage_bridge.py --provider antigravity`; timestamps are Unix seconds and must come from the provider. A bridge is a receiver, not a quota estimator.
+
+Provider references: [Codex account rate limits](https://learn.chatgpt.com/docs/app-server), [Claude statusLine rate limits](https://code.claude.com/docs/en/statusline#rate-limit-usage), [Antigravity usage command](https://antigravity.google/docs/cli/commands/usage/).
+
 ## 📱 Follow a task on your phone
 
 Open **Mobile** in the desktop progress card, confirm sharing, then scan the QR code shown **inside the same card**. The QR replaces the other card information without increasing the card size. Short 160 ms transitions soften opening, closing and switching between progress and QR; they keep the bubble stationary and the QR sharp. Windows reduced-motion preferences are respected. No browser opens on the computer. **Back** returns to progress, and **Copy link** copies the read-only URL. The desktop QR is generated locally with a bundled encoder; no extra pip package, Node runtime or QR service is required. The web viewer also generates its QR locally. The viewer adapts to your screen and detects Portuguese or English. Its footer omits the explanatory sentence about estimated progress.

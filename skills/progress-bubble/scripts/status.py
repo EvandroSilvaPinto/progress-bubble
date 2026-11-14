@@ -15,6 +15,7 @@ from navigation import conversation_url
 from colors import load_colors, css
 from i18n import t, system_language
 from progress import displayed_progress, visual_state, progress_script
+from usage_source import provider_for,load_cache
 from web_client import sync_task, stop_sharing,task_lock,secret_path
 
 
@@ -48,6 +49,7 @@ def main():
     parser.add_argument('--dismiss-completed', action='store_true')
     parser.add_argument('--open', action='store_true')
     parser.add_argument('--edit-colors', action='store_true', help='Open the native color editor with the bubble')
+    parser.add_argument('--usage-provider',choices=['auto','codex','claude','antigravity','off'],help='Local subscription quota source; never uploaded')
     parser.add_argument('--web-url', help='Opt this task into private sharing at an HTTPS service origin')
     parser.add_argument('--stop-sharing', action='store_true', help='Revoke this task sharing link')
     args = parser.parse_args()
@@ -113,6 +115,8 @@ def main():
     data = dict(delivery_id=uuid.uuid4().hex,title=args.title, percent=args.percent, status=args.status,language=language,
                 message=args.message, updated=now, html=str(target), eta_at=eta_at,
                 conversation_url=origin_url,conversation_app=str(app.resolve()) if app else previous.get('conversation_app'))
+    data['usage_provider']=provider_for(args.usage_provider or previous.get('usage_provider'),origin_url)
+    if data['usage_provider']!='off':data['usage']=load_cache(data['usage_provider'])
     data.update(visual_state(previous,args.percent,args.status,eta_at,moment))
     visible = displayed_progress(data,moment)
     eta = html.escape(eta_text(data))

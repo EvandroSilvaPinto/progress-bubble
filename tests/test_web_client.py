@@ -23,6 +23,7 @@ class SharingTests(unittest.TestCase):
         self.env.start();self.addCleanup(self.env.stop)
         self.state=Path(self.tmp.name)/'demo.json'
         self.payload=dict(title='Task',message='Working',status='Em andamento',percent=10,
+                          usage={'provider':'codex','windows':{'primary':{'used_percent':42}}},usage_provider='codex',
                           html='C:/private/path.html',conversation_app='private.exe',conversation_url='codex://private')
 
     def test_local_mode_never_contacts_the_network(self):
@@ -43,6 +44,8 @@ class SharingTests(unittest.TestCase):
         self.assertEqual(calls[0][2]['write_token'],calls[1][2]['write_token'])
         self.assertEqual(calls[0][2]['id'],calls[1][2]['id'])
         self.assertNotIn('html',calls[1][2]['payload'])
+        self.assertNotIn('usage',calls[1][2]['payload'])
+        self.assertNotIn('usage_provider',calls[1][2]['payload'])
         self.assertNotIn('conversation_app',calls[1][2]['payload'])
         self.assertNotIn('conversation_url',calls[1][2]['payload'])
         self.assertNotIn(calls[0][2]['write_token'],output.getvalue()+json.dumps(second))
