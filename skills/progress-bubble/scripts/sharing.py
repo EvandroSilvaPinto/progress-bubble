@@ -33,8 +33,6 @@ def share_task(app):
     if not endpoint:
         messagebox.showinfo(t('Compartilhar acompanhamento'),t('Serviço web ainda não configurado.'),parent=app.root)
         return
-    if not messagebox.askyesno(t('Compartilhar acompanhamento'),t('Enviar somente título, mensagem e progresso para gerar um link temporário? Quem tiver o link poderá visualizar esta demanda.'),parent=app.root):
-        return
     app.sharing_in_flight=True
     results=queue.Queue()
     snapshot=dict(app.data)

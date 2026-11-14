@@ -1,7 +1,7 @@
 """One native palette opened from one of the five main color bubbles."""
 from i18n import t
 from tkinter import colorchooser, messagebox
-from colors import MAIN_COLORS, contrast, save_colors, set_main_color
+from colors import MAIN_COLORS, save_colors, set_main_color
 
 
 def choose_color(parent,theme,key,on_saved):
@@ -13,10 +13,5 @@ def choose_color(parent,theme,key,on_saved):
         result = set_main_color(theme,key,selected)
         save_colors(result)
         on_saved(result)
-        text_ratio = min(contrast(result[k],result['background'])
-                         for k in ('foreground','muted','message','links'))
-        if text_ratio < 4.5 or contrast(result['ring'],result['track']) < 3:
-            messagebox.showwarning(t('Contraste baixo'),
-                t('Cor aplicada. Algumas combinações podem ficar difíceis de ler.\nVocê pode ajustar Fundo, Texto, Progresso ou Detalhes.'),parent=parent)
     except (ValueError,OSError) as error:
         messagebox.showerror(t('Não foi possível salvar a cor'),str(error),parent=parent)

@@ -5,6 +5,8 @@ import locale
 import os
 
 EN = {
+    'Modelo indisponível':'Model unavailable',
+    'Modelo: {model}':'Model: {model}',
     'Configurações':'Settings',
     'Mostrar uso da assinatura':'Show subscription usage',
     'Voltar':'Back',

@@ -19,7 +19,7 @@ from progress import displayed_progress
 from window_style import configure_window
 from transitions import PanelMotion,animations_enabled,enter_view,exit_view
 from usage_source import UsageReader,provider_for
-from usage_ui import current_usage,draw_usage,draw_usage_ring,toggle_usage,draw_usage_message
+from usage_ui import current_usage,draw_usage,draw_usage_ring,toggle_usage,draw_usage_message,draw_model,model_hint
 from settings_menu import load_preferences,show_settings_menu,settings_tooltip
 from sharing import share_task
 from native_qr import draw_qr,hide_qr,copy_qr
@@ -93,6 +93,8 @@ class Bubble:
         for tag in ('bubble', 'close', 'report','settings','mobile','qr-back','qr-copy','usage'):
             self.canvas.tag_bind(tag, '<Enter>', lambda e: self.canvas.configure(cursor='hand2'))
             self.canvas.tag_bind(tag, '<Leave>', lambda e: self.canvas.configure(cursor=''))
+        self.canvas.tag_bind('model','<Enter>',lambda e:self.tooltip.show(model_hint(self.data),e.x_root,e.y_root))
+        self.canvas.tag_bind('model','<Leave>',lambda e:self.tooltip.hide())
         self.canvas.tag_bind('settings','<Enter>',lambda e:settings_tooltip(self,e))
         self.canvas.tag_bind('settings','<Leave>',lambda e:self.hide_tooltip())
         self.root.bind('<Control-comma>',lambda e:show_settings_menu(self))
@@ -149,6 +151,7 @@ class Bubble:
                 draw_usage(self,usage)
                 draw_usage_message(self,self.data.get('message',''))
             else:self.text(23,185,self.data.get('message','')[:88],9,t['message'],width=302,translate=False)
+            draw_model(self)
             self.text(329,112,'Celular',8,t['links'],anchor='ne',tags='mobile')
             self.text(23,234,eta_text(self.data),9,t['links'])
             label = 'Abrir conversa  ↗' if self.data.get('conversation_url') else 'Abrir detalhes  ↗'

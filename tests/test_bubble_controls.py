@@ -17,7 +17,8 @@ class BubbleControlTests(unittest.TestCase):
         app.theme=dict(COLORS)
         app.tooltip=Mock()
         app.data=dict(title='Cores',message='Texto',status='Em andamento',percent=65)
-        with patch('i18n.system_language',return_value='en'),patch('bubble.tk.PhotoImage'):
+        with patch('i18n.system_language',return_value='en'),patch('bubble.tk.PhotoImage'),patch('usage_ui.tkfont.Font') as font:
+            font.return_value.measure.side_effect=lambda value:len(value)*6
             Bubble.draw(app)
         labels=[call.kwargs.get('text') for call in app.canvas.create_text.call_args_list]
         self.assertIn('PROGRESS',labels)

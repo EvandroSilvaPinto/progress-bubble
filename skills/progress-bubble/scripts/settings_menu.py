@@ -12,8 +12,8 @@ def load_preferences(path=None):
     try:
         data=json.loads((path or config_path().with_name('settings.json')).read_text(encoding='utf-8'))
         value=data.get('show_usage')
-        return {'show_usage':value if type(value) is bool else True}
-    except (OSError,ValueError,AttributeError):return {'show_usage':True}
+        return {'show_usage':value if type(value) is bool else False}
+    except (OSError,ValueError,AttributeError):return {'show_usage':False}
 
 
 def save_preferences(show_usage,path=None):

@@ -5,9 +5,10 @@ import struct
 import zlib
 import tkinter as tk
 from tkinter import font as tkfont
-from i18n import system_language
+from i18n import system_language,t
 from usage_model import view
 from usage_source import provider_for
+from model_identity import clean_model
 
 
 def current_usage(app):
@@ -72,3 +73,16 @@ def draw_usage_message(app,text):
     font=tkfont.Font(root=app.root,font=('Segoe UI',-max(1,round(8*scale*96/72))))
     fitted=compact_message(text,font.measure,302*scale)
     app.text(23,205,fitted,8,app.theme['message'],width=302,translate=False)
+
+
+def model_hint(data):
+    name=clean_model(data.get('model_name'))
+    return t('Modelo: {model}',model=name) if name else t('Modelo indisponível')
+
+
+def draw_model(app):
+    name=clean_model(app.data.get('model_name')) or t('Modelo indisponível')
+    scale=app.layout['card']
+    font=tkfont.Font(root=app.root,font=('Segoe UI',-max(1,round(7.5*scale*96/72))))
+    fitted=compact_message(name,font.measure,148*scale)
+    app.text(329,90,fitted,7.5,app.theme['muted'],anchor='ne',tags='model',translate=False)

@@ -36,6 +36,12 @@ Asked your agent to work on something while you focus elsewhere? **Progress Bubb
 
 > **Before installing:** the floating bubble requires **native Windows + Python 3.10 or later with Tkinter**. On macOS, Linux, WSL and environments without a desktop, use the HTML progress page.
 
+## 🧠 Model identification
+
+The desktop card identifies the model used by its own chat, above **Mobile**. Codex reads only the current thread's local model metadata, respecting `CODEX_HOME`; it does not infer the model from shared quota or another chat. A long name is shortened to fit, with the full name available on hover. When metadata is unavailable, the card says **Model unavailable**.
+
+For clients that expose a confirmed model name to the agent, pass `--model-name "known-model-id"`; use `--model-name none` to clear it. Claude/Antigravity integrations must supply a real model name instead of guessing from account limits. Model names remain local and are excluded from mobile sharing. A model label identifies the chat; the subscription bar can still represent quota shared by multiple models.
+
 ## 📊 Subscription usage in the desktop tracker
 
 The Windows card can show a second bar for **real subscription quota**, independently of task progress. Click **Subscription · 5h** to switch to the weekly window when available. The same selected window appears as a thin outer bubble ring: green below 60%, yellow from 60%, orange from 80%, and red from 95%. Long card messages collapse to one measured, ellipsized line when the quota bar is visible; their full content remains in the local files. The bubble keeps only its task percentage; it shows no quota percentage or renewal text.
@@ -56,7 +62,7 @@ Provider references: [Codex account rate limits](https://learn.chatgpt.com/docs/
 
 ## 📱 Follow a task on your phone
 
-Open **Mobile** in the desktop progress card, confirm sharing, then scan the QR code shown **inside the same card**. The QR replaces the other card information without increasing the card size. Short 160 ms transitions soften opening, closing and switching between progress and QR; they keep the bubble stationary and the QR sharp. Windows reduced-motion preferences are respected. No browser opens on the computer. **Back** returns to progress, and **Copy link** copies the read-only URL. The desktop QR is generated locally with a bundled encoder; no extra pip package, Node runtime or QR service is required. The web viewer also generates its QR locally. The viewer adapts to your screen and detects Portuguese or English. Its footer omits the explanatory sentence about estimated progress.
+Open **Mobile** in the desktop progress card to generate a temporary sharing link immediately, then scan the QR code shown **inside the same card**. The QR replaces the other card information without increasing the card size. Short 160 ms transitions soften opening, closing and switching between progress and QR; they keep the bubble stationary and the QR sharp. Windows reduced-motion preferences are respected. No browser opens on the computer. **Back** returns to progress, and **Copy link** copies the read-only URL. The desktop QR is generated locally with a bundled encoder; no extra pip package, Node runtime or QR service is required. The web viewer also generates its QR locally. The viewer adapts to your screen and detects Portuguese or English. Its footer omits the explanatory sentence about estimated progress.
 
 **Local by default.** Sharing is opt-in for each task. The hosted viewer uses Cloudflare Workers Free and D1 Free; end users need no account. Anyone holding a private link can read that task until it expires, so treat the link and QR as private.
 
@@ -222,7 +228,7 @@ Use `AGENTS.md` for Codex, `CLAUDE.md` for Claude Code or Antigravity rules, acc
 
 ## 🎨 Make it yours
 
-The gear replaces the old **Colors** link and groups **Colors**, **Sizes**, and **Show subscription usage**. Unchecking usage hides both the card's quota bar and the bubble's outer quota ring; task progress stays visible. The preference is saved in `ProgressBubble/settings.json`, reused by future trackers and applied to open ones on refresh. Hidden trackers stop scheduling quota reads. Settings is also available with **Ctrl+,** and from the QR view. The card size stays unchanged.
+The gear replaces the old **Colors** link and groups **Colors**, **Sizes**, and **Show subscription usage**. Subscription usage is off by default; enable it here when desired. Existing saved choices are preserved. Unchecking usage hides both the card's quota bar and the bubble's outer quota ring; task progress stays visible. The preference is saved in `ProgressBubble/settings.json`, reused by future trackers and applied to open ones on refresh. Hidden trackers stop scheduling quota reads. Settings is also available with **Ctrl+,** and from the QR view. The card size stays unchanged.
 
 
 Click the **⚙ Settings** icon, then **Colors**, to reveal five centered circles above the card. Hover for a tooltip and click to choose a color:
@@ -235,7 +241,7 @@ Click the **⚙ Settings** icon, then **Colors**, to reveal five centered circle
 | **Details** | Links and time remaining |
 | **States** | Completion, failure and waiting |
 
-Choices are applied and saved immediately. **Reset colors** appears inside Settings only while the palette is visible. It restores every default shade, including derived and state colors. Other open trackers receive the changes on their next refresh. Statuses also use symbols and text. The green logo retains its original colors.
+Choices are applied and saved immediately, without contrast warning dialogs. **Reset colors** appears inside Settings only while the palette is visible. It restores every default shade, including derived and state colors. Other open trackers receive the changes on their next refresh. Statuses also use symbols and text. The green logo retains its original colors.
 
 **Three sizes, two independent settings:** open **⚙ Settings → Sizes**, or right-click the bubble to open Settings. Choose **Small**, **Medium** or **Large** in each group:
 

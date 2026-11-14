@@ -52,6 +52,7 @@ def frame(percent, expanded=True, palette=False, complete=False):
         message = ('Report delivered and verified.' if complete else
                    'Reviewing the content.' if percent > 60 else 'Organizing the information.')
         text(542, y+209, message, 13, '#c5cfdf')
+        text(795, y+95, 'gpt-6.1-sol', 10, MUTED)
         text(818, y+112, 'Mobile', 10, ACCENT)
         if not complete:
             text(542, y+250, 'Less than 1 min' if percent > 60 else 'About 3 min left', 11, ACCENT)

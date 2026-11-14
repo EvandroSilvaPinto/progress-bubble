@@ -122,6 +122,10 @@ Explicar que qualquer pessoa com o link/QR pode ler aquela demanda até expirar:
 
 Para encerrar somente o compartilhamento: `python "<diretorio-absoluto-desta-skill>/scripts/status.py" --output "<html-desta-demanda>" --stop-sharing`. Se houver falha de rede, informar revogação pendente; as próximas atualizações tentam novamente. Não afirmar revogação antes da confirmação. Falhas na nuvem preservam o acompanhamento local. Expiração bloqueia leitura no servidor e a limpeza é horária; backups de recuperação D1 Free podem reter dados por sete dias.
 
+## Identificação do modelo
+
+Exibir o nome real do modelo no cartão, acima de Celular, sem acrescentar texto à bolinha. O Codex lê somente metadados do chat de origem confirmado e respeita CODEX_HOME, sem inferir o modelo a partir de cotas compartilhadas nem de outras conversas. Outros clientes podem passar `--model-name` com nome/ID comprovado; nunca inventar. `--model-name none` limpa a identificação. Sem metadados válidos, mostrar Modelo indisponível. Nomes longos devem caber no espaço existente com reticências e tooltip completo. Não aumentar o cartão nem enviar o nome à API mobile. A identificação do modelo não transforma uma cota compartilhada da assinatura em limite exclusivo daquele modelo.
+
 ## Cota da assinatura no desktop
 
 O cartão Windows oferece uma segunda barra da cota real da assinatura e a bolinha um anel externo por faixa de uso (verde <60%, amarelo ≥60%, laranja ≥80%, vermelho ≥95%). Manter o percentual da demanda na bolinha; não escrever nela percentual de uso nem tempo de renovação. Ao alcançar 100% da janela selecionada, mostrar SOMENTE no cartão a duração restante até o reset informado pelo provedor. Sem prazo válido, mostrar indisponível; após o reset, aguardar nova leitura real, sem fabricar 0%. Clicar no rótulo da assinatura alterna as janelas primária/semanal disponíveis. Não aumentar o cartão, não alterar a tela QR e não transformar a cota em avanço estimado pelo relógio.

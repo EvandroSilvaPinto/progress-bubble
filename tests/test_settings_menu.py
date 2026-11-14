@@ -9,10 +9,12 @@ class SettingsTests(unittest.TestCase):
         from settings_menu import load_preferences,save_preferences
         with tempfile.TemporaryDirectory() as directory:
             path=Path(directory)/'settings.json'
+            self.assertFalse(load_preferences(path)['show_usage'])
+            save_preferences(True,path)
             self.assertTrue(load_preferences(path)['show_usage'])
             save_preferences(False,path)
             self.assertFalse(load_preferences(path)['show_usage'])
-            path.write_text('[]');self.assertTrue(load_preferences(path)['show_usage'])
+            path.write_text('[]');self.assertFalse(load_preferences(path)['show_usage'])
     def test_hidden_usage_removes_both_card_bar_and_ring_state(self):
         from usage_ui import current_usage
         app=SimpleNamespace(settings={'show_usage':False},data={'usage_provider':'codex'})

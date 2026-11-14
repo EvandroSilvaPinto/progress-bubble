@@ -23,7 +23,7 @@ class SharingTests(unittest.TestCase):
         self.env.start();self.addCleanup(self.env.stop)
         self.state=Path(self.tmp.name)/'demo.json'
         self.payload=dict(title='Task',message='Working',status='Em andamento',percent=10,
-                          usage={'provider':'codex','windows':{'primary':{'used_percent':42}}},usage_provider='codex',
+                          usage={'provider':'codex','windows':{'primary':{'used_percent':42}}},usage_provider='codex',model_name='test-model',
                           html='C:/private/path.html',conversation_app='private.exe',conversation_url='codex://private')
 
     def test_local_mode_never_contacts_the_network(self):
@@ -46,6 +46,7 @@ class SharingTests(unittest.TestCase):
         self.assertNotIn('html',calls[1][2]['payload'])
         self.assertNotIn('usage',calls[1][2]['payload'])
         self.assertNotIn('usage_provider',calls[1][2]['payload'])
+        self.assertNotIn('model_name',calls[1][2]['payload'])
         self.assertNotIn('conversation_app',calls[1][2]['payload'])
         self.assertNotIn('conversation_url',calls[1][2]['payload'])
         self.assertNotIn(calls[0][2]['write_token'],output.getvalue()+json.dumps(second))
@@ -123,13 +124,20 @@ class SharingTests(unittest.TestCase):
         self.assertEqual(json.loads(self.state.read_text(encoding='utf-8'))['percent'],50)
         self.assertTrue(self.state.with_suffix('.html').exists())
 
-    def test_native_sharing_declined_does_not_upload(self):
+    def test_native_sharing_generates_qr_without_confirmation(self):
+        from unittest.mock import MagicMock
         from types import SimpleNamespace
         sharing=importlib.import_module('sharing')
-        app=SimpleNamespace(state=self.state,root=object(),data=self.payload)
-        with patch.object(sharing,'service_url',return_value='https://progress.example'),patch.object(sharing.messagebox,'askyesno',return_value=False),patch.object(sharing,'sync_task') as upload:
+        app=SimpleNamespace(state=self.state,root=MagicMock(),data=self.payload)
+        url='https://progress.example/#reader'
+        with patch.object(sharing,'service_url',return_value='https://progress.example'),patch.object(sharing.messagebox,'askyesno',return_value=False) as confirm,patch.object(sharing,'sync_task',return_value={'url':url}) as upload,patch.object(sharing.threading,'Thread') as thread,patch.object(sharing,'show_qr') as qr:
+            thread.return_value.start.side_effect=lambda:thread.call_args.kwargs['target']()
             sharing.share_task(app)
-            upload.assert_not_called()
+            app.root.after.call_args.args[1]()
+            confirm.assert_not_called()
+            upload.assert_called_once_with(self.payload,self.state,'https://progress.example',True)
+            qr.assert_called_once_with(app,url)
+            self.assertFalse(app.sharing_in_flight)
 
     def test_revoked_cli_clears_reader_link_from_deliverables(self):
         status=importlib.import_module('status')

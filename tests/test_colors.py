@@ -68,3 +68,17 @@ class ColorTests(unittest.TestCase):
         self.assertNotEqual(theme['track'],original['track'])
         theme=module.set_main_color(theme,'complete','#123456')
         self.assertEqual({theme[k] for k in ('complete','error','waiting')},{'#123456'})
+
+    def test_low_contrast_choice_is_applied_without_warning(self):
+        import sys
+        from unittest.mock import Mock, patch
+        sys.path.insert(0,str(SOURCE.parent))
+        import color_editor
+        theme=self.module().DEFAULTS
+        saved=Mock()
+        with patch.object(color_editor.colorchooser,'askcolor',return_value=((0,0,0),'#000000')),patch.object(color_editor,'save_colors') as persist,patch.object(color_editor.messagebox,'showwarning') as warning:
+            color_editor.choose_color(None,theme,'foreground',saved)
+            persist.assert_called_once()
+            saved.assert_called_once()
+            self.assertEqual(saved.call_args.args[0]['foreground'],'#000000')
+            warning.assert_not_called()
