@@ -81,15 +81,20 @@ def frame(percent, expanded=True, palette=False, complete=False):
     return im.resize((W, H), Image.Resampling.LANCZOS)
 
 
-scenes = [(15, False, False, False, 1400), (15, True, False, False, 1300)]
-scenes += [(p, True, False, False, 160) for p in range(20, 66, 5)]
-scenes += [(65, True, True, False, 1800)]
-scenes += [(p, True, False, False, 200) for p in range(70, 100, 5)]
-scenes += [(100, True, False, True, 2400), (100, False, False, True, 1300)]
-frames = [frame(*scene[:4]) for scene in scenes]
-palette = frames[12].quantize(colors=128)
-frames = [f.quantize(palette=palette, dither=Image.Dither.NONE) for f in frames]
-target = ROOT/'assets/demo.gif'
-frames[0].save(target, save_all=True, append_images=frames[1:],
-               duration=[s[4] for s in scenes], loop=0, optimize=True, disposal=2)
-print(f'{target}: {target.stat().st_size:,} bytes, {len(frames)} frames')
+def main():
+    scenes = [(15, False, False, False, 1400), (15, True, False, False, 1300)]
+    scenes += [(p, True, False, False, 160) for p in range(20, 66, 5)]
+    scenes += [(65, True, True, False, 1800)]
+    scenes += [(p, True, False, False, 200) for p in range(70, 100, 5)]
+    scenes += [(100, True, False, True, 2400), (100, False, False, True, 1300)]
+    frames = [frame(*scene[:4]) for scene in scenes]
+    palette = frames[12].quantize(colors=128)
+    frames = [f.quantize(palette=palette, dither=Image.Dither.NONE) for f in frames]
+    target = ROOT/'assets/demo.gif'
+    frames[0].save(target, save_all=True, append_images=frames[1:],
+                   duration=[s[4] for s in scenes], loop=0, optimize=True, disposal=2)
+    print(f'{target}: {target.stat().st_size:,} bytes, {len(frames)} frames')
+
+
+if __name__ == '__main__':
+    main()

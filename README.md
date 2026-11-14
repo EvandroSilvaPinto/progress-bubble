@@ -14,13 +14,54 @@ Automatic progress tracking for your AI agent, with a floating desktop bubble, v
 [![Python 3.10+](https://img.shields.io/badge/Python-3.10%2B-8b9dff?style=flat-square)](https://www.python.org/downloads/)
 [![MIT License](https://img.shields.io/badge/License-MIT-58d9b0?style=flat-square)](LICENSE)
 
-[Get started](#get-started) · [How it works](#how-it-works) · [Supported agents](#supported-agents)
+[Feature tour](#feature-tour) · [Get started](#get-started) · [How it works](#how-it-works) · [Supported agents](#supported-agents)
 
 </div>
 
-![Animated Progress Bubble demo: bubble, progress card, colors and completion](assets/demo.gif)
+![Animated feature tour: progress, settings, colors, optional quota, in-card QR, phone viewer and parallel tasks](assets/feature-tour.gif)
 
-<p align="center"><sub>Illustrative demonstration. Progress and time remaining are estimated by the agent.</sub></p>
+<p align="center"><sub>Illustrative tour with sample data. Quota is optional and off by default. The example QR does not open a live task.</sub></p>
+
+<a id="feature-tour"></a>
+## 🎬 Explore every feature
+
+The animation walks through seven views in order: **progress → settings → colors → optional subscription usage → QR sharing → phone viewer → parallel tasks**. Prefer a still image? [Open the complete visual overview](assets/feature-tour.png).
+
+| Feature | Try it | What you will see |
+| --- | --- | --- |
+| Automatic tracking | Ask the installed skill for a task expected to exceed 30 seconds | A task-specific HTML page and, on native Windows, a floating bubble. Short tasks do not need a new tracker. |
+| Floating bubble | Click to expand; drag to reposition | Task percentage and a smooth progress ring above other windows. |
+| Progress card | Open the bubble while work continues | Title, status, message, percentage and a progress bar. Remaining time is a duration, never an exact finish time. |
+| Smooth estimated progress | Provide a remaining-time estimate | The ring and bar advance conservatively between agent updates, capped at 95%; only confirmed completion reaches 100%. |
+| Return to the conversation | Select **Open chat** when an origin is available | The original conversation opens. HTML details remain available as a fallback. |
+| Model identification | Inspect the label above **Mobile**; hover a shortened name | The current chat's verified model name, or **Model unavailable**. Model identification stays local. |
+| One settings menu | Click **⚙**, right-click, or press **Ctrl+,** | Colors, card size, bubble size and subscription-usage visibility together. Settings also work in the QR view. |
+| Five editable colors | Choose **Colors**, hover a circle, then click it | A centered palette with tooltips and native color selection. Changes save immediately without contrast warnings. |
+| Reset colors | Keep the palette visible and reopen Settings | **Reset colors** restores all default shades while preserving sizes. |
+| Independent sizes | Open **Sizes** and choose Small, Medium or Large | Card plus palette scale together; the bubble has its own size choice. Windows display scaling is respected. |
+| Optional subscription usage | Enable **Show subscription usage** in Settings | A separate quota bar in the card and a thin outer bubble ring. It is **off by default**; hidden trackers stop scheduling quota reads. |
+| Usage windows and colors | Click the subscription window label when alternatives exist | Switch between short and weekly windows. Quota changes from green to yellow, orange and red as it fills. |
+| Renewal countdown | Reach 100% with a real provider reset timestamp | Only the card shows time until renewal. The bubble keeps the quota ring without quota numbers or renewal text. Missing or stale readings are identified. |
+| In-card QR | Click **Mobile** | A temporary read-only link is generated without a confirmation dialog. Its QR replaces the card contents without enlarging the card or opening a browser. **Back** restores progress; **Copy link** copies the reader URL. |
+| Another device | Scan a real task's QR using your phone | A responsive web viewer with task progress and remaining time. No viewer account or inbound connection to the computer is required. |
+| Private temporary sharing | Share one chosen task, then revoke it or let it expire | Separate reader/writer keys; expiry within 24 hours or one hour after completion. Model names, quota and conversation URLs are not uploaded. |
+| Parallel tasks | Start another independent tracker | Separate bubbles open with an offset so simultaneous tasks remain discoverable. Each has its own status and sharing link. |
+| Two close controls | Click the card's **×**, then hover the bubble | The card's × collapses just the card. The separate × above the bubble closes its window. Work can continue updating the files. |
+| Completion cleanup | Start the next interaction in the same chat | Completed bubbles associated with that chat close automatically; active tasks and other chats remain untouched. |
+| Smooth transitions | Open, collapse or switch to the QR view | Short transitions keep the bubble stationary and QR sharp; Windows reduced-motion preferences are respected. |
+| Portuguese and English | Launch with either system display language | Controls, tooltips, states and remaining time follow the detected language; task content stays as written. Other languages fall back to English. |
+| Saved preferences | Change a color, size or usage setting; open another tracker | Preferences persist across tasks, and open trackers receive changes on refresh. Existing choices survive updates. |
+| HTML and cloud mode | Run without a native Windows desktop | An HTML progress page works without a floating window. Explicit web sharing lets a cloud agent publish updates for the phone. |
+| Three agent integrations | Install for Codex, Claude Code or Antigravity | Shared tracking scripts and agent-specific setup. Quota integration support differs by provider; see the subscription section below. |
+| Easy updates | Run the documented installer update command | Refresh the installed skill with a backup of the previous version. Restart existing tracker windows to load new code. |
+
+**Demo boundaries:** these images explain the interface; they are not a screen recording or a live session. The optional quota scene uses sample values. Codex supports automatic quota reads with a signed-in local client, Claude Code needs its bridge, and Antigravity needs a trusted feed adapter. See the sections below for setup, privacy and platform limitations.
+
+To regenerate the tour assets locally (Pillow is needed only to render documentation):
+
+```powershell
+python tools/render_feature_tour.py
+```
 
 ## ✨ Fewer window switches. More clarity.
 
