@@ -68,7 +68,7 @@ Compartilhar um link clicável com caminho absoluto logo na criação. Se a visu
 
 ### Cores personalizáveis
 
-O link `Cores` no topo do cartão mostra ou esconde cinco bolinhas acima do acompanhamento: **Fundo, Texto, Progresso, Detalhes e Estados**. O clique direito na bolinha principal abre o menu de tamanhos. Clicar em uma bolinha de cor abre a paleta nativa; confirmar aplica e salva imediatamente, cancelar preserva a escolha anterior. Não abrir uma janela com uma lista de campos. Ao lado de `Cores`, com espaçamento, o link `Redefinir cores` aparece somente enquanto a paleta estiver aberta e restaura e salva a paleta padrão completa, incluindo cores secundárias e de estados. Aplicar ao acompanhamento atual e propagar aos demais abertos pela leitura das preferências; futuras demandas usam o padrão restaurado.
+A engrenagem `⚙` no topo abre Configurações, reunindo `Cores`, `Tamanhos` e `Mostrar uso da assinatura`. `Configurações → Cores` mostra ou esconde cinco bolinhas acima do acompanhamento: **Fundo, Texto, Progresso, Detalhes e Estados**. O clique direito na bolinha principal abre as mesmas configurações. Clicar em uma bolinha de cor abre a paleta nativa; confirmar aplica e salva imediatamente, cancelar preserva a escolha anterior. Não abrir uma janela com uma lista de campos. Dentro de Configurações, `Redefinir cores` aparece somente enquanto a paleta estiver aberta e restaura e salva a paleta padrão completa, incluindo cores secundárias e de estados. Aplicar ao acompanhamento atual e propagar aos demais abertos pela leitura das preferências; futuras demandas usam o padrão restaurado.
 
 Fundo controla o cartão e a bolinha; Texto controla títulos, mensagens e percentual; Progresso controla barra e anel; Detalhes controla links e tempo restante; Estados controla conclusão, falha e espera. Bordas, trilhas e tons secundários são derivados de Fundo e Texto. Os estados também usam símbolos e nomes para não dependerem só da cor. Cores personalizadas antigas são preservadas até o usuário editar o grupo correspondente. A logo da marca não muda.
 
@@ -82,9 +82,13 @@ A janela usa configuração nativa sem moldura e desativa a renderização não 
 
 Cada processo reserva uma posição independente no Windows com um handle nomeado, sem varrer demandas ou arquivos de outros chats. Novas bolinhas ocupam posições à esquerda, separadas por sua largura e um espaço, com novas fileiras acima quando necessário. Liberar a reserva ao fechar; o Windows também libera o handle se o processo terminar inesperadamente. Respeitar o tamanho da tela e o tamanho escolhido. Não mover bolinhas existentes ao abrir outras; permitir arraste manual. A coordenação exige que as bolinhas tenham sido abertas com esta versão.
 
+### Exibição da cota
+
+`Mostrar uso da assinatura` nas configurações oculta ou exibe tanto a segunda barra do cartão quanto o anel externo da bolinha, sem alterar o progresso da demanda. Salvar a preferência em `settings.json` ao lado de cores/tamanhos, propagar às bolinhas abertas e reutilizar nas novas. Desativado, não agendar novas consultas de cota por essa janela. A engrenagem também aparece na tela QR; Ctrl+, abre o mesmo menu. Não aumentar o cartão para incluir as configurações.
+
 ### Tamanhos independentes
 
-O link `Tamanhos` no cartão e o clique direito na bolinha abrem dois grupos: `Acompanhamento e cores` e `Bolinha`. Cada grupo oferece Pequeno (85%), Médio (100%, padrão) e Grande (120%). Escalar o cartão e a paleta juntos; a bolinha, percentual e botão externo usam sua própria escala. Salvar as escolhas em `sizes.json` ao lado de `colors.json`, reutilizar nas próximas demandas e propagar aos acompanhamentos abertos. Redefinir cores não altera tamanhos. O redimensionamento preserva a posição inferior direita sempre que couber na tela.
+`Configurações → Tamanhos` abre dois grupos: `Acompanhamento e cores` e `Bolinha`. Cada grupo oferece Pequeno (85%), Médio (100%, padrão) e Grande (120%). Escalar o cartão e a paleta juntos; a bolinha, percentual e botão externo usam sua própria escala. Salvar as escolhas em `sizes.json` ao lado de `colors.json`, reutilizar nas próximas demandas e propagar aos acompanhamentos abertos. Redefinir cores não altera tamanhos. O redimensionamento preserva a posição inferior direita sempre que couber na tela.
 
 ### Abrir a conversa de origem
 

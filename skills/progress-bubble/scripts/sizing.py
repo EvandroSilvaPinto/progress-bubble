@@ -48,6 +48,17 @@ def show_size_menu(app, event):
         previous.destroy()
     menu = tk.Menu(app.root, tearoff=False)
     app.size_menu = menu
+    populate_size_menu(menu,app)
+    try:
+        menu.tk_popup(event.x_root, event.y_root)
+    finally:
+        menu.grab_release()
+        # Windows can dispatch the selected command after tk_popup returns.
+        # Keep the menu and its Tcl callbacks alive until the next opening.
+
+
+def populate_size_menu(menu,app):
+    import tkinter as tk
     for role, label in (('card','Acompanhamento e cores'), ('bubble','Bolinha')):
         submenu = tk.Menu(menu, tearoff=False)
         variable = tk.StringVar(value=app.sizes[role])
@@ -57,9 +68,3 @@ def show_size_menu(app, event):
         menu.add_cascade(label=t(label), menu=submenu)
         # Keep Tk variables alive until the popup closes.
         submenu.size_variable = variable
-    try:
-        menu.tk_popup(event.x_root, event.y_root)
-    finally:
-        menu.grab_release()
-        # Windows can dispatch the selected command after tk_popup returns.
-        # Keep the menu and its Tcl callbacks alive until the next opening.

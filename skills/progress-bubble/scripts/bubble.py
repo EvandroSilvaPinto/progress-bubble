@@ -13,13 +13,14 @@ from colors import load_colors, update_html, MAIN_COLORS, reset_colors
 from tooltip import Tooltip
 from i18n import t as tr
 from shapes import rounded_png
-from sizing import load_sizes, save_size, geometry, show_size_menu
+from sizing import load_sizes, save_size, geometry
 from placement import PositionSlot, initial_position
 from progress import displayed_progress
 from window_style import configure_window
 from transitions import PanelMotion,animations_enabled,enter_view,exit_view
 from usage_source import UsageReader,provider_for
 from usage_ui import current_usage,draw_usage,draw_usage_ring,toggle_usage,draw_usage_message
+from settings_menu import load_preferences,show_settings_menu,settings_tooltip
 from sharing import share_task
 from native_qr import draw_qr,hide_qr,copy_qr
 
@@ -30,6 +31,7 @@ class Bubble:
     def __init__(self, state):
         self.state = state
         self.data = {}
+        self.settings=load_preferences()
         self.usage_reader=UsageReader()
         self.usage_snapshot=None
         self.usage_window='primary'
@@ -82,17 +84,18 @@ class Bubble:
         self.canvas.bind('<Leave>', self.defer_hide_bubble_close)
         self.canvas.bind('<Enter>', self.hover_bubble)
         self.canvas.tag_bind('report', '<ButtonRelease-1>', lambda e: self.open_html())
-        self.canvas.tag_bind('colors', '<ButtonRelease-1>', lambda e: self.edit_colors())
-        self.canvas.tag_bind('reset-colors', '<ButtonRelease-1>', lambda e: self.reset_theme())
-        self.canvas.tag_bind('sizes','<ButtonRelease-1>',lambda e:show_size_menu(self,e))
+        self.canvas.tag_bind('settings','<ButtonRelease-1>',lambda e:show_settings_menu(self,e))
         self.canvas.tag_bind('usage','<ButtonRelease-1>',lambda e:toggle_usage(self))
         self.canvas.tag_bind('mobile','<ButtonRelease-1>',lambda e:share_task(self))
         self.canvas.tag_bind('qr-back','<ButtonRelease-1>',lambda e:hide_qr(self))
         self.canvas.tag_bind('qr-copy','<ButtonRelease-1>',lambda e:copy_qr(self))
-        self.canvas.bind('<Button-3>',lambda e:show_size_menu(self,e))
-        for tag in ('bubble', 'close', 'report','colors','reset-colors','sizes','mobile','qr-back','qr-copy','usage'):
+        self.canvas.bind('<Button-3>',lambda e:show_settings_menu(self,e))
+        for tag in ('bubble', 'close', 'report','settings','mobile','qr-back','qr-copy','usage'):
             self.canvas.tag_bind(tag, '<Enter>', lambda e: self.canvas.configure(cursor='hand2'))
             self.canvas.tag_bind(tag, '<Leave>', lambda e: self.canvas.configure(cursor=''))
+        self.canvas.tag_bind('settings','<Enter>',lambda e:settings_tooltip(self,e))
+        self.canvas.tag_bind('settings','<Leave>',lambda e:self.hide_tooltip())
+        self.root.bind('<Control-comma>',lambda e:show_settings_menu(self))
         self.root.bind('<Escape>', lambda event: self.root.destroy())
         self.root.deiconify()
         self.refresh()
@@ -105,12 +108,12 @@ class Bubble:
         self.shape_images.append(photo)
         return self.canvas.create_image(x1,y1,image=photo,anchor='nw',tags=tag)
 
-    def text(self, x, y, text, size=10, color=None, bold=False, translate=True, **kw):
+    def text(self, x, y, text, size=10, color=None, bold=False, translate=True, family='Segoe UI', **kw):
         if 'width' in kw:
             kw['width'] *= self.layout['card']
         return self.canvas.create_text(x,y,text=tr(text) if translate else text,fill=color or self.theme['foreground'],
                     anchor=kw.pop('anchor','nw'),justify=kw.pop('justify','left'),
-                    font=('Segoe UI',-max(1,round(size*self.layout['card']*96/72)),'bold' if bold else 'normal'), **kw)
+                    font=(family,-max(1,round(size*self.layout['card']*96/72)),'bold' if bold else 'normal'), **kw)
 
     def draw(self):
         motion=getattr(self,'motion',None)
@@ -131,9 +134,7 @@ class Bubble:
             self.rounded(5,8,355,270,24,'#080d17','card')
             self.rounded(1,1,351,261,22,t['background'],'card',t['border'])
             self.text(23,20,'ACOMPANHAMENTO',8,t['muted'],True)
-            if self.colors_open:
-                self.text(252,20,'Redefinir cores',8,t['links'],anchor='ne',tags='reset-colors')
-            self.text(300,20,'Cores',8,t['links'],anchor='ne',tags='colors')
+            self.text(296,25,'⚙',13,t['links'],anchor='center',tags='settings',family='Segoe UI Symbol')
             self.text(328,25,'×',14,t['muted'],anchor='center',tags='close')
             title = self.data.get('title',tr('Sua demanda'))
             self.text(23,46,title[:48]+('…' if len(title)>48 else ''),14,bold=True,width=300,translate=False)
@@ -148,7 +149,6 @@ class Bubble:
                 draw_usage(self,usage)
                 draw_usage_message(self,self.data.get('message',''))
             else:self.text(23,185,self.data.get('message','')[:88],9,t['message'],width=302,translate=False)
-            self.text(329,90,'Tamanhos',8,t['links'],anchor='ne',tags='sizes')
             self.text(329,112,'Celular',8,t['links'],anchor='ne',tags='mobile')
             self.text(23,234,eta_text(self.data),9,t['links'])
             label = 'Abrir conversa  ↗' if self.data.get('conversation_url') else 'Abrir detalhes  ↗'
@@ -329,6 +329,7 @@ class Bubble:
         self.tooltip.hide()
 
     def refresh(self):
+        self.settings=load_preferences()
         sizes = load_sizes()
         if sizes != self.sizes:
             self.sizes = sizes
@@ -341,7 +342,7 @@ class Bubble:
             if data.get('dismissed') and data.get('status') == 'Concluído' and data.get('percent') == 100:
                 self.root.destroy()
                 return
-            self.usage_snapshot=self.usage_reader.read(provider_for(data.get('usage_provider'),data.get('conversation_url')))
+            self.usage_snapshot=self.usage_reader.read(provider_for(data.get('usage_provider'),data.get('conversation_url')) if self.settings['show_usage'] else 'off')
             previous_data=self.data
             self.data=data
             quota_state=current_usage(self)

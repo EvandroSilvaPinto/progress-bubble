@@ -5,6 +5,8 @@ import locale
 import os
 
 EN = {
+    'Configurações':'Settings',
+    'Mostrar uso da assinatura':'Show subscription usage',
     'Voltar':'Back',
     'Copiar link':'Copy link',
 

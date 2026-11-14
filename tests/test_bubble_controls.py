@@ -21,7 +21,9 @@ class BubbleControlTests(unittest.TestCase):
             Bubble.draw(app)
         labels=[call.kwargs.get('text') for call in app.canvas.create_text.call_args_list]
         self.assertIn('PROGRESS',labels)
-        self.assertIn('Colors',labels)
+        self.assertIn('⚙',labels)
+        self.assertNotIn('Colors',labels)
+        self.assertNotIn('Sizes',labels)
         self.assertIn('Cores',labels)
         self.assertIn('Texto',labels)
         self.assertIn('▶ In progress',labels)

@@ -222,7 +222,10 @@ Use `AGENTS.md` for Codex, `CLAUDE.md` for Claude Code or Antigravity rules, acc
 
 ## 🎨 Make it yours
 
-Click **Colors** to reveal five centered circles above the card. Hover for a tooltip and click to choose a color:
+The gear replaces the old **Colors** link and groups **Colors**, **Sizes**, and **Show subscription usage**. Unchecking usage hides both the card's quota bar and the bubble's outer quota ring; task progress stays visible. The preference is saved in `ProgressBubble/settings.json`, reused by future trackers and applied to open ones on refresh. Hidden trackers stop scheduling quota reads. Settings is also available with **Ctrl+,** and from the QR view. The card size stays unchanged.
+
+
+Click the **⚙ Settings** icon, then **Colors**, to reveal five centered circles above the card. Hover for a tooltip and click to choose a color:
 
 | Color | Controls |
 | --- | --- |
@@ -232,9 +235,9 @@ Click **Colors** to reveal five centered circles above the card. Hover for a too
 | **Details** | Links and time remaining |
 | **States** | Completion, failure and waiting |
 
-Choices are applied and saved immediately. **Reset colors** appears beside **Colors**, with spacing, only while the palette is visible. It restores every default shade, including derived and state colors. Other open trackers receive the changes on their next refresh. Statuses also use symbols and text. The green logo retains its original colors.
+Choices are applied and saved immediately. **Reset colors** appears inside Settings only while the palette is visible. It restores every default shade, including derived and state colors. Other open trackers receive the changes on their next refresh. Statuses also use symbols and text. The green logo retains its original colors.
 
-**Three sizes, two independent settings:** click **Sizes** in the card, or right-click the bubble. Choose **Small**, **Medium** or **Large** in each group:
+**Three sizes, two independent settings:** open **⚙ Settings → Sizes**, or right-click the bubble to open Settings. Choose **Small**, **Medium** or **Large** in each group:
 
 - **Card and colors:** scales the card, its text and palette together.
 - **Bubble:** scales the ring, percentage and its close button.

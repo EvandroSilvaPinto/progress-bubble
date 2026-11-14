@@ -16,7 +16,8 @@ def frame(percent, expanded=True, palette=False, complete=False):
     d = ImageDraw.Draw(im)
 
     def text(x, y, value, size=16, color=FG, bold=False, anchor=None):
-        font = ImageFont.truetype(str(BOLD if bold else FONT), size*SCALE)
+        font_path = Path('C:/Windows/Fonts/seguisym.ttf') if value=='⚙' else BOLD if bold else FONT
+        font = ImageFont.truetype(str(font_path), size*SCALE)
         d.text((x*SCALE, y*SCALE), value, font=font, fill=color, anchor=anchor)
 
     def box(bounds, radius, fill, outline=None):
@@ -31,7 +32,7 @@ def frame(percent, expanded=True, palette=False, complete=False):
     text(58, 254, 'Smooth estimates. Progress in view.', 16, MUTED)
     caption = ('Parallel tasks, bubbles side by side.' if complete and not expanded else
                'Delivered. Ready for your next request.' if complete else
-               'Five colors. Your combination.' if palette else
+               'Settings → Colors. Make it yours.' if palette else
                'Click to open the progress card.' if not expanded else
                'Clear status. Keep your focus.')
     text(58, 354, caption, 16, GREEN if complete else FG)
@@ -40,9 +41,7 @@ def frame(percent, expanded=True, palette=False, complete=False):
     if expanded:
         box((518, y, 902, y+282), 22, CARD, '#2b374d')
         text(542, y+18, 'PROGRESS', 11, MUTED)
-        if palette:
-            text(704, y+18, 'Reset colors', 11, ACCENT)
-        text(819, y+18, 'Colors', 12, MUTED)
+        text(830, y+14, '⚙', 20, ACCENT)
         text(875, y+15, '×', 18, MUTED)
         text(542, y+53, 'Preparing report', 21, bold=True)
         text(542, y+95, 'Completed' if complete else 'In progress', 13, color)
@@ -53,7 +52,7 @@ def frame(percent, expanded=True, palette=False, complete=False):
         message = ('Report delivered and verified.' if complete else
                    'Reviewing the content.' if percent > 60 else 'Organizing the information.')
         text(542, y+209, message, 13, '#c5cfdf')
-        text(818, y+95, 'Sizes', 10, ACCENT)
+        text(818, y+112, 'Mobile', 10, ACCENT)
         if not complete:
             text(542, y+250, 'Less than 1 min' if percent > 60 else 'About 3 min left', 11, ACCENT)
         text(768, y+250, 'Open chat ↗', 12, ACCENT)

@@ -11,6 +11,7 @@ from usage_source import provider_for
 
 
 def current_usage(app):
+    if not getattr(app,'settings',{}).get('show_usage',True):return None
     provider=provider_for(app.data.get('usage_provider'),app.data.get('conversation_url'))
     if provider=='off':return None
     snapshot=getattr(app,'usage_snapshot',None) or app.data.get('usage')
