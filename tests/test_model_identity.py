@@ -43,3 +43,30 @@ class ModelIdentityTests(unittest.TestCase):
             root=Path(directory)
             (root/('rollout-'+THREAD+'.jsonl')).write_text('{"type":"turn_context","payload":'+'['*20000+'0'+']'*20000+'}')
             self.assertIsNone(codex_model(ORIGIN,root))
+
+    def test_claude_code_model_comes_from_latest_assistant_message_of_project(self):
+        from model_identity import claude_model
+        with tempfile.TemporaryDirectory() as directory:
+            root=Path(directory);project=root/'C--work-app';project.mkdir()
+            rows=[{'type':'assistant','message':{'model':'claude-old'}},{'type':'user','message':{'model':'ignore'}},{'type':'assistant','message':{'model':'claude-sonnet-5-5'}}]
+            (project/'s1.jsonl').write_text('\n'.join(json.dumps(r) for r in rows))
+            self.assertEqual(claude_model('C:\\work\\app',root),'claude-sonnet-5-5')
+            self.assertIsNone(claude_model('C:\\other',root))
+
+    def test_resolve_uses_claude_only_inside_claude_code(self):
+        from model_identity import resolve_model
+        with patch.dict('os.environ',{'CLAUDECODE':'1'},clear=False),patch('model_identity.claude_model',return_value='claude-x'):
+            self.assertEqual(resolve_model(None,None,{}),'claude-x')
+            self.assertEqual(resolve_model('manual',None,{}),'manual')
+
+    def test_app_name_is_detected_from_the_running_app(self):
+        from model_identity import resolve_app
+        with patch.dict('os.environ',{'CLAUDECODE':'1'},clear=True):
+            self.assertEqual(resolve_app(None,None,{}),'Claude Code')
+            self.assertEqual(resolve_app(None,ORIGIN,{}),'Codex')
+            self.assertEqual(resolve_app('Antigravity',None,{}),'Antigravity')
+            self.assertIsNone(resolve_app('none',None,{}))
+        with patch.dict('os.environ',{},clear=True):
+            self.assertIsNone(resolve_app(None,None,{'conversation_url':'x'}))
+        from web_client import FIELDS
+        self.assertNotIn('app_name',FIELDS)

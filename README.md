@@ -81,7 +81,7 @@ Asked your agent to work on something while you focus elsewhere? **Progress Bubb
 
 The desktop card identifies the model used by its own chat, above **Mobile**. Codex reads only the current thread's local model metadata, respecting `CODEX_HOME`; it does not infer the model from shared quota or another chat. A long name is shortened to fit, with the full name available on hover. When metadata is unavailable, the card says **Model unavailable**.
 
-For clients that expose a confirmed model name to the agent, pass `--model-name "known-model-id"`; use `--model-name none` to clear it. Claude/Antigravity integrations must supply a real model name instead of guessing from account limits. Model names remain local and are excluded from mobile sharing. A model label identifies the chat; the subscription bar can still represent quota shared by multiple models.
+The card shows the app in use instead of the model: Codex and Claude Code are auto-detected, other clients pass `--app-name "Antigravity"` (`--app-name none` clears). The name stays local and is excluded from mobile sharing. `--model-name` is still stored locally but not displayed.
 
 ## 📊 Subscription usage in the desktop tracker
 
@@ -379,3 +379,7 @@ If this project helps you, a **⭐ on the repository** helps others find it.
 Independent project, not officially affiliated with OpenAI, Anthropic or Google.
 
 Installation references: [Codex](https://learn.chatgpt.com/docs/build-skills) · [Claude Code](https://code.claude.com/docs/en/skills) · [Antigravity](https://antigravity.google/docs/skills). Paths checked on November 13, 2026.
+
+## Uso padrão em toda interação
+
+Skills só disparam quando o agente decide usá-las, então a instalação também registra o uso fixo: no Claude Code, um hook `UserPromptSubmit` em `settings.json` (preserva hooks existentes, cria `settings.json.progress-bubble.bak`); no Codex, um bloco gerenciado em `~/.codex/AGENTS.md`; no Antigravity, em `~/.gemini/GEMINI.md` (no escopo de projeto, `AGENTS.md`). Reinstalar atualiza sem duplicar. Use `--no-always-on` para instalar só a skill. Para remover, apague o hook ou o bloco entre `progress-bubble:start` e `progress-bubble:end`.

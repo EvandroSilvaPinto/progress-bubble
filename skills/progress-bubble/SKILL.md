@@ -122,9 +122,9 @@ Explicar que qualquer pessoa com o link/QR pode ler aquela demanda até expirar:
 
 Para encerrar somente o compartilhamento: `python "<diretorio-absoluto-desta-skill>/scripts/status.py" --output "<html-desta-demanda>" --stop-sharing`. Se houver falha de rede, informar revogação pendente; as próximas atualizações tentam novamente. Não afirmar revogação antes da confirmação. Falhas na nuvem preservam o acompanhamento local. Expiração bloqueia leitura no servidor e a limpeza é horária; backups de recuperação D1 Free podem reter dados por sete dias.
 
-## Identificação do modelo
+## Identificação do aplicativo
 
-Exibir o nome real do modelo no cartão, acima de Celular, sem acrescentar texto à bolinha. O Codex lê somente metadados do chat de origem confirmado e respeita CODEX_HOME, sem inferir o modelo a partir de cotas compartilhadas nem de outras conversas. Outros clientes podem passar `--model-name` com nome/ID comprovado; nunca inventar. `--model-name none` limpa a identificação. Sem metadados válidos, mostrar Modelo indisponível. Nomes longos devem caber no espaço existente com reticências e tooltip completo. Não aumentar o cartão nem enviar o nome à API mobile. A identificação do modelo não transforma uma cota compartilhada da assinatura em limite exclusivo daquele modelo.
+Exibir no cartão, acima de Celular, o nome do aplicativo em uso (Codex, Claude Code, Antigravity), sem acrescentar texto à bolinha. Codex e Claude Code são detectados automaticamente (`CODEX_THREAD_ID`/origem `codex://` e `CLAUDECODE`). Outros clientes passam `--app-name "Nome"`; nunca inventar. `--app-name none` limpa. Sem detecção, mostrar Aplicativo indisponível. Nomes longos usam reticências e tooltip completo. Não aumentar o cartão nem enviar o nome à API mobile. O nome do modelo (`--model-name`) continua sendo salvo localmente, mas não é exibido.
 
 ## Cota da assinatura no desktop
 

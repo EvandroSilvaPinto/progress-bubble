@@ -16,7 +16,7 @@ from colors import load_colors, css
 from i18n import t, system_language
 from progress import displayed_progress, visual_state, progress_script
 from usage_source import provider_for,load_cache
-from model_identity import resolve_model,clean_model
+from model_identity import resolve_model,clean_model,resolve_app
 from web_client import sync_task, stop_sharing,task_lock,secret_path
 
 
@@ -51,6 +51,7 @@ def main():
     parser.add_argument('--open', action='store_true')
     parser.add_argument('--edit-colors', action='store_true', help='Open the native color editor with the bubble')
     parser.add_argument('--model-name',help='Known model name; Codex auto-detects current-chat metadata; none clears')
+    parser.add_argument('--app-name',help='App in use (Codex, Claude Code, Antigravity); auto-detected for Codex and Claude Code; none clears')
     parser.add_argument('--usage-provider',choices=['auto','codex','claude','antigravity','off'],help='Local subscription quota source; never uploaded')
     parser.add_argument('--web-url', help='Opt this task into private sharing at an HTTPS service origin')
     parser.add_argument('--stop-sharing', action='store_true', help='Revoke this task sharing link')
@@ -120,6 +121,9 @@ def main():
     if args.model_name is not None and args.model_name!='none' and clean_model(args.model_name) is None:
         parser.error('--model-name must contain a known printable model name of at most 96 characters')
     data['model_name']=resolve_model(args.model_name,origin_url,previous)
+    if args.app_name is not None and args.app_name!='none' and clean_model(args.app_name) is None:
+        parser.error('--app-name must contain a printable app name of at most 96 characters')
+    data['app_name']=resolve_app(args.app_name,origin_url,previous)
     data['usage_provider']=provider_for(args.usage_provider or previous.get('usage_provider'),origin_url)
     if data['usage_provider']!='off':data['usage']=load_cache(data['usage_provider'])
     data.update(visual_state(previous,args.percent,args.status,eta_at,moment))

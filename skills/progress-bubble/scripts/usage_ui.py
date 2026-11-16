@@ -76,12 +76,12 @@ def draw_usage_message(app,text):
 
 
 def model_hint(data):
-    name=clean_model(data.get('model_name'))
-    return t('Modelo: {model}',model=name) if name else t('Modelo indisponível')
+    name=clean_model(data.get('app_name'))
+    return t('Aplicativo: {app}',app=name) if name else t('Aplicativo indisponível')
 
 
 def draw_model(app):
-    name=clean_model(app.data.get('model_name')) or t('Modelo indisponível')
+    name=clean_model(app.data.get('app_name')) or t('Aplicativo indisponível')
     scale=app.layout['card']
     font=tkfont.Font(root=app.root,font=('Segoe UI',-max(1,round(7.5*scale*96/72))))
     fitted=compact_message(name,font.measure,148*scale)

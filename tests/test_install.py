@@ -64,6 +64,35 @@ class InstallTests(unittest.TestCase):
             self.assertNotEqual(repeat.returncode,0)
             self.assertEqual(sentinel.read_text(),'preservar')
 
+    def test_always_on_is_registered_idempotently_and_preserves_user_files(self):
+        import json
+        with tempfile.TemporaryDirectory(prefix='always on ') as tmp:
+            home = Path(tmp)
+            env = dict(os.environ,HOME=tmp,USERPROFILE=tmp)
+            (home/'.claude').mkdir()
+            (home/'.claude/settings.json').write_text(json.dumps({'theme':'dark','hooks':{'UserPromptSubmit':[{'hooks':[{'type':'command','command':'echo mine'}]}]}}))
+            (home/'.codex').mkdir()
+            (home/'.codex/AGENTS.md').write_text('# Minhas regras\n')
+            cmd = [sys.executable,str(SCRIPT),'--agent','all']
+            self.assertEqual(subprocess.run(cmd,env=env,capture_output=True).returncode,0)
+            self.assertEqual(subprocess.run(cmd+['--update'],env=env,capture_output=True).returncode,0)
+            data = json.loads((home/'.claude/settings.json').read_text(encoding='utf-8'))
+            commands = [h['command'] for e in data['hooks']['UserPromptSubmit'] for h in e['hooks']]
+            self.assertEqual(data['theme'],'dark')
+            self.assertIn('echo mine',commands)
+            self.assertEqual(sum('remind.py' in c for c in commands),1)
+            for relative in ('.codex/AGENTS.md','.gemini/GEMINI.md'):
+                text = (home/relative).read_text(encoding='utf-8')
+                self.assertEqual(text.count('progress-bubble:start'),1)
+            self.assertIn('# Minhas regras',(home/'.codex/AGENTS.md').read_text(encoding='utf-8'))
+
+    def test_always_on_can_be_disabled(self):
+        with tempfile.TemporaryDirectory(prefix='no always on ') as tmp:
+            env = dict(os.environ,HOME=tmp,USERPROFILE=tmp)
+            result = subprocess.run([sys.executable,str(SCRIPT),'--agent','all','--no-always-on'],env=env,capture_output=True)
+            self.assertEqual(result.returncode,0,result.stderr)
+            self.assertFalse((Path(tmp)/'.claude/settings.json').exists())
+
 
 if __name__ == '__main__':
     unittest.main()

@@ -7,6 +7,8 @@ import os
 EN = {
     'Modelo indisponível':'Model unavailable',
     'Modelo: {model}':'Model: {model}',
+ 'Aplicativo indisponível':'App unavailable',
+ 'Aplicativo: {app}':'App: {app}',
     'Configurações':'Settings',
     'Mostrar uso da assinatura':'Show subscription usage',
     'Voltar':'Back',
