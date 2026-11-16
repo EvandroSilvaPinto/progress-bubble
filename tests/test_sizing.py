@@ -60,3 +60,22 @@ class SizingTests(unittest.TestCase):
             path=Path(tmp)/'sizes.json'
             path.write_text('[]')
             self.assertEqual(load_sizes(path),DEFAULTS)
+
+
+class SolidBubbleTests(unittest.TestCase):
+    def test_disk_is_opaque_through_gap_below_outer_usage_ring(self):
+        import math,zlib
+        for scale in (.85,1,1.2,1.5,2):
+            png=ring_png(65,'#8b9dff',scale)
+            size=struct.unpack('!I',png[16:20])[0]
+            chunks=[];offset=8
+            while offset<len(png):
+                length=int.from_bytes(png[offset:offset+4],'big')
+                if png[offset+4:offset+8]==b'IDAT':chunks.append(png[offset+8:offset+8+length])
+                offset+=length+12
+            raw=zlib.decompress(b''.join(chunks));factor=size/84
+            for y in range(size):
+                for x in range(size):
+                    if math.hypot((x+.5)/factor-42,(y+.5)/factor-42)<40:
+                        self.assertEqual(raw[y*(size*4+1)+1+x*4+3],255,(scale,x,y))
+            self.assertEqual(raw[4],0,'Exterior corners must remain transparent')

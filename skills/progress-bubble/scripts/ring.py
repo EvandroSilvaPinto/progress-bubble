@@ -18,9 +18,9 @@ def ring_png(percent, color, scale=1.0, background='#101827', track='#27334a', b
         for x in range(size):
             dx,dy = (x+.5)/factor-42,(y+.5)/factor-42
             distance = math.hypot(dx,dy)
-            alpha = max(0,min(1,(37-distance)*factor+.5))
+            alpha = max(0,min(1,(41-distance)*factor+.5))
             rgb = base
-            if distance > 36:
+            if distance > 40:
                 rgb = edge
             coverage = max(0,min(1,(2-abs(distance-32))*factor+.5))
             angle = math.atan2(dx,-dy)%math.tau

@@ -65,7 +65,7 @@ python tools/render_feature_tour.py
 
 ## ✨ Fewer window switches. More clarity.
 
-Asked your agent to work on something while you focus elsewhere? **Progress Bubble** keeps progress visible above your other windows. Click the bubble whenever you want more context.
+Asked your agent to work on something while you focus elsewhere? **Progress Bubble** keeps progress visible above your other windows. Click the bubble whenever you want more context. Card backgrounds reuse symmetric corners and uniform pixel spans for faster first opening, preserving native-resolution antialiasing. Its circular background is filled through the outer contour, including the space between progress and optional quota rings, so light windows do not show through the bubble.
 
 | At a glance | On click |
 | --- | --- |

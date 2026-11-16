@@ -15,10 +15,12 @@ def rounded_png(width, height, radius, fill, border='', backing='', stroke=1):
     radius = max(0,min(radius,width/2,height/2))
     inside, edge = rgb(fill), rgb(border or fill)
     background = rgb(backing) if backing else (0,0,0)
-    pixels = bytearray()
-    for y in range(height):
-        pixels.append(0)
-        for x in range(width):
+    # Only corners vary in both axes. Build their top-left pixels once,
+    # mirror them, and repeat the solid spans instead of visiting every pixel.
+    corner = min(math.ceil(radius), width//2)
+
+    def row(y):
+        def pixel(x):
             dx = abs(x+.5-width/2)-(width/2-radius)
             dy = abs(y+.5-height/2)-(height/2-radius)
             distance = math.hypot(max(dx,0),max(dy,0))+min(max(dx,dy),0)-radius
@@ -30,7 +32,15 @@ def rounded_png(width, height, radius, fill, border='', backing='', stroke=1):
                 alpha = 255
             else:
                 alpha = round(coverage*255)
-            pixels.extend((*color,alpha))
+            return bytes((*color,alpha))
+        left = [pixel(x) for x in range(corner)]
+        middle = pixel(corner)*(width-2*corner) if width>2*corner else b''
+        return b'\0'+b''.join(left)+middle+b''.join(reversed(left))
+
+    top_count = min(math.ceil(radius),height//2)
+    top = [row(y) for y in range(top_count)]
+    middle = row(top_count)*(height-2*top_count) if height>2*top_count else b''
+    pixels = b''.join(top)+middle+b''.join(reversed(top))
 
     def chunk(kind,data):
         return struct.pack('!I',len(data))+kind+data+struct.pack('!I',zlib.crc32(kind+data)&0xffffffff)
