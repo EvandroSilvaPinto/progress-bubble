@@ -67,4 +67,5 @@ class UsageReader:
 
 def provider_for(value,origin=None):
     if value and value!='auto':return value
-    return 'codex' if isinstance(origin,str) and origin.startswith('codex://') else 'off'
+    if isinstance(origin,str) and origin.startswith('codex://'):return 'codex'
+    return 'claude' if os.environ.get('CLAUDECODE') and not os.environ.get('CODEX_THREAD_ID') else 'off'

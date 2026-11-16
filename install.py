@@ -1,6 +1,9 @@
 """Install the shared skill for Codex, Claude Code or Google Antigravity."""
 import argparse
 import json
+import os
+import subprocess
+import sys
 from pathlib import Path
 import shutil
 from datetime import datetime
@@ -103,6 +106,10 @@ def always_on(agent, scope, project, home, target):
         settings = (project / '.claude' if scope == 'project' else home / '.claude') / 'settings.json'
         command = f'python "{(target / "scripts/remind.py").as_posix()}"'
         set_claude_hook(settings, command)
+        bridge = subprocess.run([sys.executable, str(target / 'scripts/usage_bridge.py'), '--setup-claude'],
+                                capture_output=True, text=True, env=dict(os.environ, CLAUDE_CONFIG_DIR=str(settings.parent)))
+        if bridge.returncode:
+            print('claude: cota não configurada (' + (bridge.stderr or '').strip() + ')')
         return f'hook UserPromptSubmit em {settings.name}'
     if scope == 'project':
         path = project / 'AGENTS.md'
